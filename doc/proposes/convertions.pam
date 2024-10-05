@@ -1,0 +1,26 @@
+let Range = (start, end) -> {
+    current = start - 1
+
+    pub next() {
+        current++
+        ret current < end
+    }
+
+    pub current -> current
+
+    pub a..b is Range(a, b)
+    pub (a: int, b: int) is Range(a, b) 
+}
+
+let Zip = (r1 : Range, r2 : Range) -> {
+    pub next() {
+        ret r1.next() and r2.next()
+    }
+
+    pub current -> (r1.current, r2.current)
+}
+
+for i in Zip((0, 10), 20..30) {
+    print(i.0 + i.1)
+}
+:: 20, 22, 24, 26, 28, 30, 32, 34, 36, 38
