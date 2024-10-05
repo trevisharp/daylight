@@ -1,0 +1,138 @@
+:: Book is equals a type definition
+:: ':' defines a concrete get set property
+let Book = {
+    pub title : string
+    pub author : string
+}
+
+:: error: Book is a abstract type definition and
+:: cannot be used has a concrete value
+:: let title = Book.title
+
+:: 'Type definition { values }' create a object
+:: Concrete members can recive values
+let myBook = Book {
+    title = 'inquisição'
+    author = 'leonardo trevisan silio'
+}
+
+:: This is valid
+:: Type { definition } is always valid
+let value = { 
+    pub func() -> int
+} {
+    pub func() {
+        return 2
+    }
+}
+
+:: If a type definition is fully concrete and
+:: well defined the '{ }' is not needed and
+:: the expression already is a concrete value
+let MyFullConcreteType = {
+    pub text : string = 'olá, pamella'
+}
+
+:: Defines a type has the type constructor
+:: ': string' is not needed because is infered
+let User = (name, password) -> {
+    pub username = name
+    pub password = password
+}
+
+:: You can define things twice if are functions
+:: with different parameters and same result
+:: applying overload
+let User = name -> User(name, '123')
+
+:: When a function returns a concrete type, he
+:: is a synonimous to the type, in other words
+:: '(...) -> Type' is equals to the Type(...)
+let getName = (user : User) -> user.username
+
+:: A type definition with all values without a '{ other values}'
+:: to define a concrete data
+let myUser = User('pamella')
+
+:: an function that recives a abstract type definition
+:: and returns another type definition
+:: By inference the compiler now that T is of type 'Type'
+:: because current is defined has a readonly property
+:: with type T.
+let Iterator = T -> {
+    pub next() -> bool
+    pub current -> T
+}
+
+:: Define a function from Type to Type
+:: By Inference knowing hat Iterator is a
+:: Type -> Type function, so T is of type Type
+let Collection = T -> {
+    pub iterator() -> Iterator(T)
+}
+
+:: Define List has a function that recives a type
+:: and return a Type Collection(T) with a implementation
+let List = T -> Collection(T) {
+    count = 0
+    data = T[10]
+
+    pub add(T value) {
+        if count == data.len -> extend()
+        data[count] = value
+        count++
+    }
+
+    pub iterator() {
+        return Iterator(T) {
+            position = -1;
+            
+            pub next() {
+                position++
+                return position < list.count
+            }
+
+            pub current {
+                return data[position]
+            }
+        }
+    }
+
+    extend() {
+        newData = T[2 * data.len]
+        for i < data.len -> newData[i] = data[i]
+    }
+}
+
+:: This is valid
+let list1 = List(User)
+
+:: This is valid too
+let list2 = List({
+    pub info : string
+})
+
+:: info is a readonly member with the value text
+let MyType = text -> {
+    pub info -> text
+}
+
+:: How MyType is a function that returns a Type
+:: both MyType("hello") and MyType are a valid type 
+let typeExample = (x: MyType("hello")) -> {
+    return x.info
+}
+
+:: This case is very intersting and have some cool features
+:: first, the 'in' modifier allow the call coll.map(...)
+:: has a extension for all Collection(T)
+:: second, T and R are not defined anywhere and are infered
+:: has a generic paramter for the type collection
+:: third, using a yield return the return of the function
+:: is infered has R[]
+let map = (in coll: Collection(T), mapper: T -> R) -> {
+    let it = coll.iterator()
+    while it.next() {
+        yield return mapper(it.current)
+    }
+}
